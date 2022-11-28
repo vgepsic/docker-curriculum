@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for, flash, redirect
 import os
 import random
+import mydb
 
 app = Flask(__name__)
 
@@ -22,9 +23,23 @@ images = [
 
 @app.route("/")
 def index():
-    url = random.choice(images)
-    return render_template("index.html", url=url)
+    url = random.choice(mydb.db_fetch_all(database))
+    return render_template("index.html", url=url[0])
 
+@app.route('/create/', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        url = request.form['url']
+        if not url:
+            print('URL is required!')
+        else:
+            mydb.db_replace(database, url)
+            return redirect(url_for('create'))
+    test = mydb.db_fetch_all(database)
+    return render_template('create.html', db_urls=test)
 
 if __name__ == "__main__":
+    directory = os.getcwd()
+    database = (directory[0:directory.rfind('/')] + '/db/pythonsqlite.db')
+    mydb.db_init(database, images)
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

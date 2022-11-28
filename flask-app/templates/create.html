@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block container %}
+    <h1>{% block title %} Update URL : {% endblock %}</h1>
+    <form method="post">
+        <label for="title">URL :</label>
+        <input type="text" name="url"
+               placeholder="the url"
+               value="{{ request.form['url'] }}"></input>
+        <br>
+        <button type="submit">Submit</button>
+        <br> <br>
+    </form>
+
+    <h1> Current URLs : </h1>
+    <table style="width:100%">
+        <tr>
+            <th>URL</th>
+        </tr>
+        {% for row in db_urls %}
+            <tr>
+                <td>{{ row[0] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
